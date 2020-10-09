@@ -2,7 +2,7 @@ from enlace import *
 import time
 
 class Comunicador(object):
-    def __init__(self, serialName):
+    def __init__(self, serialName, totalPacotes):
         self.serialName = serialName
         self.com = enlace(serialName)
         self.com.enable()
@@ -12,6 +12,7 @@ class Comunicador(object):
         self.eop = (255).to_bytes(1, byteorder="big") + (170).to_bytes(1, byteorder="big") + (255).to_bytes(1, byteorder="big") + (170).to_bytes(1, byteorder="big")
         self.sensorId = (8).to_bytes(1, byteorder="big")
         self.serverId = (10).to_bytes(1, byteorder="big")
+        self.totalPacotes = totalPacotes
 
     def getHead(self):
         self.head, r = self.com.getData(10)
@@ -89,11 +90,10 @@ class Comunicador(object):
     def sendHS(self, idArquivo):
         head = b""
         pacote = b""
-        print("entrou hs-------")
         h0 = (1).to_bytes(1, byteorder="big")
         h1 = self.sensorId
         h2 = self.serverId
-        h3 = (0).to_bytes(1, byteorder="big")
+        h3 = (self.totalPacotes).to_bytes(1, byteorder="big")
         h4 = (0).to_bytes(1, byteorder="big")
         h5 = (idArquivo).to_bytes(1, byteorder="big")
         h6 = (0).to_bytes(1, byteorder="big")
@@ -102,7 +102,6 @@ class Comunicador(object):
         h9 = (0).to_bytes(1, byteorder="big")
         head = h0 + h1 + h2 + h3 + h4  + h5 + h6 + h7 + h8 + h9
         pacote = head + self.eop
-        print("entrou hs")
         self.com.sendData(pacote)
         time.sleep(0.5)
 

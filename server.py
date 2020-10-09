@@ -12,7 +12,7 @@ def main():
     try:
         #declaramos um objeto do tipo enlace com o nome "com". Essa é a camada inferior à aplicação. Observe que um parametro
         #para declarar esse objeto é o nome da porta.
-        server = Comunicador(serialName)
+        server = Comunicador(serialName, 0 )
 
 
         print("-------------------------")
@@ -20,30 +20,33 @@ def main():
         print("-------------------------")
         
         hs = False
+
+        serverid = 10
        
         while hs == False:
             server.getHead()
             server.getEop()
-            if server.h0 == 1:
+            if server.h0 == 1 and server.h2 == serverid:
                 print(" handshake respondido")
+                numPacotes = server.h3
                 server.rogerHS()
                 hs = True 
     
         doingIt = True
 
-        while doingIt == True:
+        count = 1
 
+        while count <= numPacotes:
+            t1= time.clock()
+            t2= time.clock()
             server.getHead()
-
-
             server.getPayload()
             server.getEop()
             server.sendAcknowlage()
             if server.conferData():
-                print("Pacote recebido com sucesso ", server.lastPackage)
+                print("Pacote recebido com sucesso ", server.lastPackage + 1)
                 server.joinPackages(server.payload)
-                if server.h4 == server.h3:
-                    doingIt = False
+                count += 1
             
             
 

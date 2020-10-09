@@ -27,10 +27,16 @@ def main():
     try:
         #declaramos um objeto do tipo enlace com o nome "com". Essa é a camada inferior à aplicação. Observe que um parametro
         #para declarar esse objeto é o nome da porta.
-        client = Comunicador(serialName)
+
+        imagem = "./imageB.png"
+        data = Arquivo(imagem)
+        dividedPackages = data.setPacotes()
+
+
+        client = Comunicador(serialName,data.total_payloads)
 
         #imagem = input("Coloque o endereço da imagem que deseja enviar: ")
-        imagem = "./imageB.png"
+
 
 
         # print("-------------------------")
@@ -51,7 +57,7 @@ def main():
         onlineCheck = True
         while onlineCheck == True:
             client.sendHS(45)
-            time.sleep(5)
+            time.sleep(3)
             if client.com.rx.getIsEmpty() == True:
                 x = input("Sem resposta. Enviar Novamente (Y/N)")
                 if x == "N":
@@ -70,8 +76,6 @@ def main():
                     print ("Carregando imagem para transmissão :")
                     print("-------------------------")
                     
-                    data = Arquivo(imagem)
-                    dividedPackages = data.setPacotes()
                     
                     print("-------------------------")
                     print ("Imagem Pronta para ser enviada:")
@@ -80,6 +84,8 @@ def main():
                     indexPackageToBeSent = 0
 
                     while(indexPackageToBeSent < data.total_payloads ):
+                        t1= time.clock()
+                        t2= time.clock()
                         client.sendPackage(dividedPackages[indexPackageToBeSent])
                         client.getHead()
                         client.getEop()
