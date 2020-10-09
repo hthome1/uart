@@ -35,7 +35,7 @@ class Arquivo(object):
         return self.index
 
     def getPayloadSize(self):
-        return len(self.arqFrag[self.index - 1])
+        return len(self.arqFrag[self.index-1])
 
     def setHeadDados(self):
         head = b""
@@ -65,7 +65,7 @@ class Arquivo(object):
         h7 = (0).to_bytes(1, byteorder="big")
         h8 = (0).to_bytes(1, byteorder="big")
         h9 = (0).to_bytes(1, byteorder="big")
-        head = h0 + h1 + h2 + h3 + h4 + h4 + h5 + h6 + h7 + h7 + h8 + h9
+        head = h0 + h1 + h2 + h3  + h4 + h5 + h6 + h7 + h8 + h9
         return head
 
 

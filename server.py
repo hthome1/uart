@@ -24,7 +24,7 @@ def main():
         while hs == False:
             server.getHead()
             server.getEop()
-            if server.message_type == 1:
+            if server.h0 == 1:
                 print(" handshake respondido")
                 server.rogerHS()
                 hs = True 
@@ -34,13 +34,15 @@ def main():
         while doingIt == True:
 
             server.getHead()
+
+
             server.getPayload()
             server.getEop()
             server.sendAcknowlage()
             if server.conferData():
-                print("Pacote recebido com sucesso ", server.h7)
+                print("Pacote recebido com sucesso ", server.lastPackage)
                 server.joinPackages(server.payload)
-                if server.h4 == server.nPackage:
+                if server.h4 == server.h3:
                     doingIt = False
             
             

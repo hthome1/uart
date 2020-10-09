@@ -45,9 +45,7 @@ class Comunicador(object):
     def conferData(self):
 
         # Falta conferir o CRC
-        if self.payload_size == len(self.payload) and \ 
-        self.eop_recebida == self.eop and\
-        self.h7 == self.lastPackage + 1:
+        if self.h5 == len(self.payload) and self.eop_recebida == self.eop and self.h4 == self.lastPackage + 1:
             return True
         else:
             return False
@@ -64,15 +62,15 @@ class Comunicador(object):
         h9 = (0).to_bytes(1, byteorder="big")
 
 
-        h0 = (1).to_bytes(1, byteorder="big")
-        h6 = (0).to_bytes(1, byteorder="big")
-        h7 = (0).to_bytes(1, byteorder="big")
+        # h0 = (1).to_bytes(1, byteorder="big")
+        # h6 = (0).to_bytes(1, byteorder="big")
+        # h7 = (0).to_bytes(1, byteorder="big")
 
 
         if self.conferData() == False:
             
             h0 = (6).to_bytes(1, byteorder="big")
-            h6 = (self.h7).to_bytes(1, byteorder="big")
+            h6 = (self.h4).to_bytes(1, byteorder="big")
             h7 = (0).to_bytes(1, byteorder="big")
             print("-------------------")
             print("O pacote {} esta corrompido".format(self.lastPackage + 1))
@@ -81,9 +79,9 @@ class Comunicador(object):
         else:
             h0 = (4).to_bytes(1, byteorder="big")
             h6 = (0).to_bytes(1, byteorder="big")
-            h7 = (self.h7).to_bytes(1, byteorder="big")
+            h7 = (self.h4).to_bytes(1, byteorder="big")
             
-        head = h0 + h1 + h2 + h3 + h4 + h4 + h5 + h6 + h7 + h7 + h8 + h9
+        head = h0 + h1 + h2 + h3 + h4 + h5 + h6 + h7 + h8 + h9
         pacote = head + self.eop
         self.com.sendData(pacote)
         time.sleep(0.5)
@@ -91,18 +89,20 @@ class Comunicador(object):
     def sendHS(self, idArquivo):
         head = b""
         pacote = b""
+        print("entrou hs-------")
         h0 = (1).to_bytes(1, byteorder="big")
-        h1 = (self.sensorId).to_bytes(1, byteorder="big")
-        h2 = (self.serverId).to_bytes(1, byteorder="big")
-        h3 = (self.total_payloads).to_bytes(1, byteorder="big")
+        h1 = self.sensorId
+        h2 = self.serverId
+        h3 = (0).to_bytes(1, byteorder="big")
         h4 = (0).to_bytes(1, byteorder="big")
         h5 = (idArquivo).to_bytes(1, byteorder="big")
         h6 = (0).to_bytes(1, byteorder="big")
         h7 = (0).to_bytes(1, byteorder="big")
         h8 = (0).to_bytes(1, byteorder="big")
         h9 = (0).to_bytes(1, byteorder="big")
-        head = h0 + h1 + h2 + h3 + h4 + h4 + h5 + h6 + h7 + h7 + h8 + h9
+        head = h0 + h1 + h2 + h3 + h4  + h5 + h6 + h7 + h8 + h9
         pacote = head + self.eop
+        print("entrou hs")
         self.com.sendData(pacote)
         time.sleep(0.5)
 
@@ -119,7 +119,7 @@ class Comunicador(object):
         h7 = (0).to_bytes(1, byteorder="big")
         h8 = (0).to_bytes(1, byteorder="big")
         h9 = (0).to_bytes(1, byteorder="big")
-        head = h0 + h1 + h2 + h3 + h4 + h4 + h5 + h6 + h7 + h7 + h8 + h9
+        head = h0 + h1 + h2 + h3 + h4 + h4 + h5 + h6 + h7 + h8 + h9
         pacote = head + self.eop
         self.com.sendData(pacote)
         time.sleep(0.5)
@@ -137,7 +137,7 @@ class Comunicador(object):
         h7 = (0).to_bytes(1, byteorder="big")
         h8 = (0).to_bytes(1, byteorder="big")
         h9 = (0).to_bytes(1, byteorder="big")
-        head = h0 + h1 + h2 + h3 + h4 + h4 + h5 + h6 + h7 + h7 + h8 + h9
+        head = h0 + h1 + h2 + h3 + h4 + h5 + h6 + h7 + h7 + h8 + h9
         pacote = head + self.eop
         self.com.sendData(pacote)
         time.sleep(0.5)

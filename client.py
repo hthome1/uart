@@ -50,9 +50,7 @@ def main():
 
         onlineCheck = True
         while onlineCheck == True:
-            client.sendHS()
-            print("Esperando resposta do servidor")
-            print("-------------------------")
+            client.sendHS(45)
             time.sleep(5)
             if client.com.rx.getIsEmpty() == True:
                 x = input("Sem resposta. Enviar Novamente (Y/N)")
@@ -61,7 +59,7 @@ def main():
             else:
                 client.getHead()
                 client.getEop()
-                if client.hs_response == 1:
+                if client.h0 == 2:
                     onlineCheck = True
                     
                     # Log
@@ -92,7 +90,7 @@ def main():
                             print("Enviando novamente")
                             print("-------------------------")
                         else:
-                            print("Pacote {} de {}  enviado".format(indexPackageToBeSent + 1, client.nPackage))
+                            print("Pacote {} de {}  enviado".format(indexPackageToBeSent + 1, data.total_payloads))
                             indexPackageToBeSent += 1
                     onlineCheck = False
                     
