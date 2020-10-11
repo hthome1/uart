@@ -34,8 +34,8 @@ class Comunicador(object):
         self.h5 = self.head[5]
         self.h6 = self.head[6]
         self.h7 = self.head[7]
-        self.h8 = self.head[8]
-        self.h9 = self.head[9]
+        self.h8h9 = self.head[8:10]
+        # self.h9 = self.head[9]
 
     def getPayload(self):
         self.payload, teste = self.com.getData(self.h5)
@@ -46,7 +46,8 @@ class Comunicador(object):
     def conferData(self):
 
         # Falta conferir o CRC
-        if self.h5 == len(self.payload) and self.eop_recebida == self.eop and self.h4 == self.lastPackage + 1:
+        crc = libscrc.modbus(self.payload).to_bytes(2, byteorder="big")
+        if self.h5 == len(self.payload) and self.eop_recebida == self.eop and self.h4 == self.lastPackage + 1 and crc == self.h8h9:
             return True
         else:
             return False
