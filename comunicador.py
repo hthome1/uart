@@ -1,5 +1,6 @@
 from enlace import *
 import time
+import libscrc
 
 class Comunicador(object):
     def __init__(self, serialName, totalPacotes):
@@ -35,6 +36,7 @@ class Comunicador(object):
         self.h6 = self.head[6]
         self.h7 = self.head[7]
         self.h8h9 = self.head[8:10]
+
         # self.h9 = self.head[9]
 
     def getPayload(self):
@@ -72,7 +74,8 @@ class Comunicador(object):
         if self.conferData() == False:
             
             h0 = (6).to_bytes(1, byteorder="big")
-            h6 = (self.h4).to_bytes(1, byteorder="big")
+            self.resp = 6
+            h6 = (self.lastPackage + 1).to_bytes(1, byteorder="big")
             h7 = (0).to_bytes(1, byteorder="big")
             print("-------------------")
             print("O pacote {} esta corrompido".format(self.lastPackage + 1))
@@ -82,10 +85,12 @@ class Comunicador(object):
             h0 = (4).to_bytes(1, byteorder="big")
             h6 = (0).to_bytes(1, byteorder="big")
             h7 = (self.h4).to_bytes(1, byteorder="big")
+            self.resp = 4
             
         head = h0 + h1 + h2 + h3 + h4 + h5 + h6 + h7 + h8 + h9
         pacote = head + self.eop
         self.com.sendData(pacote)
+
         time.sleep(0.5)
 
     def sendHS(self, idArquivo):
@@ -119,7 +124,7 @@ class Comunicador(object):
         h7 = (0).to_bytes(1, byteorder="big")
         h8 = (0).to_bytes(1, byteorder="big")
         h9 = (0).to_bytes(1, byteorder="big")
-        head = h0 + h1 + h2 + h3 + h4 + h4 + h5 + h6 + h7 + h8 + h9
+        head = h0 + h1 + h2 + h3 + h4 + h5 + h6 + h7 + h8 + h9
         pacote = head + self.eop
         self.com.sendData(pacote)
         time.sleep(0.5)
@@ -128,6 +133,7 @@ class Comunicador(object):
         head = b""
         pacote = b""
         h0 = (5).to_bytes(1, byteorder="big")
+        self.restm = 5
         h1 = (0).to_bytes(1, byteorder="big")
         h2 = (0).to_bytes(1, byteorder="big")
         h3 = (0).to_bytes(1, byteorder="big")

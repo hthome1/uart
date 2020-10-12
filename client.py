@@ -3,6 +3,7 @@ from enlace import *
 import time
 from comunicador import Comunicador
 from arquivo import Arquivo
+from datetime import datetime
 
 # voce deverá descomentar e configurar a porta com através da qual ira fazer comunicaçao
 # para saber a sua porta, execute no terminal :
@@ -33,16 +34,11 @@ def main():
         dividedPackages = data.setPacotes()
 
 
+
         client = Comunicador(serialName,data.total_payloads)
 
-        #imagem = input("Coloque o endereço da imagem que deseja enviar: ")
 
-
-
-        # print("-------------------------")
-        # print("TESTANDO ERRO NO TAMANHO DO PAYLOAD")
-        # print("-------------------------")
-
+        log= open("logclient.txt","w+")
 
 
 
@@ -53,10 +49,11 @@ def main():
 
 
 
-
+        doingIt = True
         onlineCheck = True
         while onlineCheck == True:
             client.sendHS(45)
+            log.write(str(datetime.now()) + "/" + "Envio"+"/"+"1" + "/"+ "14"+ "\n")
             time.sleep(3)
             if client.com.rx.getIsEmpty() == True:
                 x = input("Sem resposta. Enviar Novamente (Y/N)")
@@ -65,39 +62,53 @@ def main():
             else:
                 client.getHead()
                 client.getEop()
+                tamanho = len(client.head) + len(client.eop_recebida)
+                tipo = str(client.h0)
+                escrito = str(datetime.now()) + "/" + "Recebimento"+"/" + tipo + "/"+ str(tamanho) + "\n"
+                log.write(escrito)
                 if client.h0 == 2:
                     onlineCheck = True
-                    
-                    # Log
-                    print("Comunicação inicializada")
-                    print("-------------------------")
-
-                    print("-------------------------")
-                    print ("Carregando imagem para transmissão :")
-                    print("-------------------------")
-                    
-                    
-                    print("-------------------------")
-                    print ("Imagem Pronta para ser enviada:")
-                    print("-------------------------")
-
                     indexPackageToBeSent = 0
 
                     while(indexPackageToBeSent < data.total_payloads ):
                         t1= time.clock()
                         t2= time.clock()
+                        doingIt = True
+                        
                         client.sendPackage(dividedPackages[indexPackageToBeSent])
-                        client.getHead()
-                        client.getEop()
-                        if client.h0== 6:
-                            indexPackageToBeSent = client.h6 - 1 
-                            print("-------------------------")
-                            print("Erro no", indexPackageToBeSent)
-                            print("Enviando novamente")
-                            print("-------------------------")
-                        else:
-                            print("Pacote {} de {}  enviado".format(indexPackageToBeSent + 1, data.total_payloads))
-                            indexPackageToBeSent += 1
+                        while doingIt:
+                            if not client.com.rx.getIsEmpty():
+                                linha = str(datetime.now()) + "/" + "Envio"+"/"+ str(dividedPackages[indexPackageToBeSent][0]) + "/"+ str(len(dividedPackages[indexPackageToBeSent])) + "/" + str(indexPackageToBeSent + 1) + "/" +  str(data.total_payloads) + "/" + str(dividedPackages[indexPackageToBeSent][8:10]) + "\n"
+                                log.write(linha)
+                                client.getHead()
+                                client.getEop()
+                                print(client.h0)
+                                log.write(str(datetime.now()) + "/" + "Recebimento"+"/" +str(client.h0) + "/"+ "14"+ "\n")
+                                if client.h0== 6:
+                                    indexPackageToBeSent = client.h6 - 1
+                                    print("-------------------------")
+                                    print("Erro no", client.h6)
+                                    print("Enviando novamente")
+                                    print("-------------------------")
+                                else:
+                                    print("Pacote {} de {}  enviado".format(indexPackageToBeSent + 1, data.total_payloads))
+                                    indexPackageToBeSent += 1
+                                doingIt = False
+                            else:
+                                if time.clock() - t2 > 20:
+                                    client.timeOut()
+                                    log.write(str(datetime.now()) + "/" + "Envio"+"/" +str(client.restm) + "/"+ "14"+ "\n")
+                                    doingIt = False
+                                    indexPackageToBeSent = data.total_payloads
+                                if time.clock() - t1 > 5:
+                                    client.sendPackage(dividedPackages[indexPackageToBeSent])
+                                    linha = str(datetime.now()) + "/" + "Envio"+"/"+ str(dividedPackages[indexPackageToBeSent][0]) + "/"+ str(len(dividedPackages[indexPackageToBeSent])) + "/" + str(indexPackageToBeSent + 1) + "/" +  str(data.total_payloads) + "/" + str(dividedPackages[indexPackageToBeSent][8:10]) + "\n"
+                                    log.write(linha)
+                                    t1 = time.clock()
+
+
+
+                    log.close()
                     onlineCheck = False
                     
 

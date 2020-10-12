@@ -1,5 +1,6 @@
-    
 import libscrc
+
+
 class Arquivo(object):
     def __init__(self, arquivo):
         self.eop = b""
@@ -65,8 +66,6 @@ class Arquivo(object):
         h7 = (0).to_bytes(1, byteorder="big")
         h8h9 = (libscrc.modbus(self.arqFrag[self.index-1])).to_bytes(2, byteorder="big")
         head = h0 + h1 + h2 + h3  + h4 + h5 + h6 + h7 + h8h9
-        if self.index == 1:
-            print(h8h9)
         return head
 
 
